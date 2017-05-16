@@ -1,5 +1,6 @@
-                                           防污染 DNS 和 SNI Proxy
-                                           ======================
+防污染 DNS 和 SNI Proxy
+======================
+
 # 1. 组件简介
 ## Dnsmasq
 具有 DHCP Server、DNS Server、DNS Forwarding、TFTP Server、PXEboot Server 等各种功能。主要使用其 DNS 转发功能
