@@ -15,12 +15,11 @@ vps1 运行 dnsmasq，监听53和5353端口，TCP/UDP 都监听，上游 DNS 为
 vps2 运行 dnsmasq，上游为 vps1的地址，使用5353端口，并配置 dnsmasq-china-list，也就是把常见国内站点使用国内dns解析，列表外的站点查询上游DNS
 有些人的方案是，仅使用一个国内vps，使用 DNSCrypt 连接 opedns 等提供加密通道的上游DNS，也是不错的
 ## 2.2. Dnsmasq 的基本配置
-'''ruby
+
 /* 
  * filename: /etc/dnsmasq.conf 
  */
-......
-......
+
 interface=eth0
 interface=lo
     \# 上面是你想要监听的网络接口
@@ -28,24 +27,25 @@ interface=lo
 conf-dir=/etc/dnsmasq.d/
     \# 这里加载 /etc/dnsmasq.d/ 目录里面的一些列表, 待会我们会放一些 dnsmasq-china-list 列表
  
- ## 2.3. 上游DNS 
+    \#上游DNS 
 no-resolv
     \# 不使用系统 /etc/resolv.conf 里面的配置
  
 server=10.0.0.1#5353
     \# 这里配置上游服务器，比如 10.0.0.1, 端口为5353
     \# 用 5353 端口为了防止污染
-'''
-## 2.4. iptables 转发5353端口的查询
+
+
+## 2.3. iptables 转发5353端口的查询
 上面 dnsmasq 默认监听的是53端口的 TCP/UDP 连接，下面我们通过 iptables 将5353端口的查询转发至53端口，这个可以用来解决部分 ISP 的  dns 污染问题。（看个人需要，是否在两个vps上面都打开5353端口，毕竟一些操作系统的网络设置不支持 DNS 自定义端口…
-'''ruby
+
 iptables -t nat -A PREROUTING -p tcp --dport 5353 -j REDIRECT --to-port 53
 iptables -t nat -A PREROUTING -p  udp --dport 5353 -j REDIRECT --to-port 53
-'''
-## 2.5. 国内站点加速
+
+## 2.4. 国内站点加速
 方案一：准备 被墙网站 的列表，统一查询国外 dns，其余的走国内DNS；参考 gfwlist
 方案二：准备 国内站点 列表，这部分走国内，其他的查询国外 dns；参考 dnsmasq-china-list
-'''
+
 git clone https://github.com/felixonmars/dnsmasq-china-list
     \# clone 一下前人的成果
     
@@ -61,14 +61,14 @@ git clone https://github.com/felixonmars/dnsmasq-china-list
 sudo ln -s `pwd`/dnsmasq-china-list/accelerated-domains.china.conf /etc/dnsmasq.d/
 sudo ln -s `pwd`/dnsmasq-china-list/bogus-nxdomain.china.conf /etc/dnsmasq.d/
 sudo ln -s `pwd`/dnsmasq-china-list/google.china.conf /etc/dnsmasq.d/
-'''
+
 
 下面这样的配置条目，指定特定泛域名的上游服务器
-'''
+
 server=/163.com/114.114.114.114(#端口号)
-'''
+
 你想让国内站点使用适合你的 DNS服务器进行查询，可以通过该项目提供的脚本实现一键替换
-'''
+
 cd /path/to/your/dnsmasq-china-list
 ./dnsmasq-update-china-list ali
     \# 这样就把那些记录里面的DNS地址都改为阿里的 223.5.5.5 了
@@ -76,37 +76,39 @@ cd /path/to/your/dnsmasq-china-list
  
 ./dnsmasq-update-china-list 11.11.11.11
     \# 这样就是使用指定的 dns 服务器地址
-'''
-## 2.6. SNI Proxy 站点的NS记录
+
+## 2.5. SNI Proxy 站点的NS记录
 方案一，泛域名
 按照下面的配置，可以将某个泛域名统一解析到相应的 IP 上
-'''
+
 /*
  * filename: /etc/dnsmasq.d/sni_hosts.conf 
  */
-......
+
 address=/google.com/192.168.1.1
 address=/gmail.com/192.168.1.1
 address=/gstatic.com/192.168.1.1
-......
-'''
+
+
 方案二，单域名
 如果不需要进行泛解析，只要对几个单域名进行解析，也可以像下面这样
-'''
+
 echo "addn-hosts=/etc/my_hosts" >> /etc/dnsmasq.conf
-'''
+
 
 /etc/my_hosts 文件内容的书写格式同系统的 /etc/hosts
 
 # 3. SNI Proxy
 ## 3.1. 安装
-'''
+
 yum install autoconf automake curl gettext-devel libev-devel pcre-devel perl pkgconfig rpm-build udns-devel -y
 yum install sniproxy -y
-'''
+
 ## 3.2. 配置
 vi /etc/sniproxy.conf
-'''
+
+
+
 \# sniproxy example configuration file
 \# lines that start with # are comments
 \# lines with only white space are ignored
@@ -252,7 +254,7 @@ table xmpp_imap_smtp {
     (.*\.|)gmail\.com$ *
 }
 
-'''
+
 
 ## 3.3. 启动守护进程
 sniproxy  -c /etc/sniproxy.conf
@@ -261,7 +263,7 @@ sniproxy  -c /etc/sniproxy.conf
 因为我们的SNI Proxy 只针对 HTTPS 站点，所以如果用户发起HTTP请求，我们必须做好跳转。
 在 nginx 的 默认站点配置文件里进行如下修改：
 
-'''
+
 server {
         listen   80 default_server;;
         server_name _;   
@@ -270,6 +272,5 @@ server {
                 rewrite ^ https://$host$request_uri permanent;
         }
 }
-'''
 
-# 
+
