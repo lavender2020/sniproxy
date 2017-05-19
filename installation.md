@@ -22,18 +22,18 @@ vps2 运行 dnsmasq，上游为 vps1的地址，使用5353端口，并配置 dns
 
 interface=eth0  
 interface=lo  
-    \# 上面是你想要监听的网络接口
+    #上面是你想要监听的网络接口
  
 conf-dir=/etc/dnsmasq.d/  
-    \# 这里加载 /etc/dnsmasq.d/ 目录里面的一些列表, 待会我们会放一些 dnsmasq-china-list 列表  
+    #这里加载 /etc/dnsmasq.d/ 目录里面的一些列表, 待会我们会放一些 dnsmasq-china-list 列表  
  
-    \#上游DNS   
+    #上游DNS   
 no-resolv  
-    \# 不使用系统 /etc/resolv.conf 里面的配置  
+    #不使用系统 /etc/resolv.conf 里面的配置  
  
 server=10.0.0.1#5353  
-    \# 这里配置上游服务器，比如 10.0.0.1, 端口为5353  
-    \# 用 5353 端口为了防止污染  
+    #这里配置上游服务器，比如 10.0.0.1, 端口为5353  
+    #用 5353 端口为了防止污染  
 
 
 ## 2.3. iptables 转发5353端口的查询
@@ -47,17 +47,17 @@ iptables -t nat -A PREROUTING -p  udp --dport 5353 -j REDIRECT --to-port 53
 方案二：准备 国内站点 列表，这部分走国内，其他的查询国外 dns；参考 dnsmasq-china-list
 
 git clone https://github.com/felixonmars/dnsmasq-china-list  
-    \# clone 一下前人的成果  
+    #clone 一下前人的成果  
     
-    \# 下面建立三个软链接  
+    #下面建立三个软链接  
 sudo ln -s `pwd`/dnsmasq-china-list/accelerated-domains.china.conf /etc/dnsmasq.d/  
 sudo ln -s `pwd`/dnsmasq-china-list/bogus-nxdomain.china.conf /etc/dnsmasq.d/  
 sudo ln -s `pwd`/dnsmasq-china-list/google.china.conf /etc/dnsmasq.d/  
 
 git clone https://github.com/felixonmars/dnsmasq-china-list  
-    \# clone 一下前人的成果  
+    #clone 一下前人的成果  
  
-    \# 下面建立三个软链接就好啦  
+    #下面建立三个软链接就好啦  
 sudo ln -s `pwd`/dnsmasq-china-list/accelerated-domains.china.conf /etc/dnsmasq.d/  
 sudo ln -s `pwd`/dnsmasq-china-list/bogus-nxdomain.china.conf /etc/dnsmasq.d/  
 sudo ln -s `pwd`/dnsmasq-china-list/google.china.conf /etc/dnsmasq.d/  
@@ -71,11 +71,11 @@ server=/163.com/114.114.114.114(#端口号)
 
 cd /path/to/your/dnsmasq-china-list  
 ./dnsmasq-update-china-list ali  
-    \# 这样就把那些记录里面的DNS地址都改为阿里的 223.5.5.5 了  
-    \# 还有其他一些常用的地址，您可以查看这个脚本  
+    #这样就把那些记录里面的DNS地址都改为阿里的 223.5.5.5 了  
+    #还有其他一些常用的地址，您可以查看这个脚本  
  
 ./dnsmasq-update-china-list 11.11.11.11  
-    \# 这样就是使用指定的 dns 服务器地址  
+    #这样就是使用指定的 dns 服务器地址  
 
 ## 2.5. SNI Proxy 站点的NS记录
 方案一，泛域名  
@@ -109,13 +109,13 @@ vi /etc/sniproxy.conf
 
 
 
-\# sniproxy example configuration file  
-\# lines that start with # are comments  
-\# lines with only white space are ignored  
+#sniproxy example configuration file  
+#lines that start with # are comments  
+#lines with only white space are ignored  
  
 user daemon  
  
-\# PID file  
+#PID file  
 pidfile /var/run/sniproxy.pid  
  
 resolver {  
@@ -123,19 +123,19 @@ resolver {
 }  
  
 error_log {  
-    \# Log to the daemon syslog facility  
-    \#syslog daemon  
+    #Log to the daemon syslog facility  
+    #syslog daemon  
  
-    \# Alternatively we could log to file  
+    #Alternatively we could log to file  
     filename /var/log/sniproxy.log  
  
-    \# Control the verbosity of the log  
-    \#priority notice  
+    #Control the verbosity of the log  
+    #priority notice  
     priority debug  
 }
  
 access_log {  
-    \# Same options as error_log  
+    #Same options as error_log  
     filename /var/log/sniproxy/sniproxy-access.log  
 }  
  
@@ -174,19 +174,19 @@ listen 5269 {
     table xmpp_imap_smtp  
 }  
  
-\# named tables are defined with the table directive  
+#named tables are defined with the table directive  
 table https_hosts {  
  
-    \# WordPress  
+    #WordPress  
     (.*\.|)wp\.com$ *  
     (.*\.|)w\.org$ *  
     (.*\.|)wordpress\.com$ *   
     (.*\.|)gravatar\.com$ *  
  
-    \# Wikipedia  
+    #Wikipedia  
     (.*\.|)wikipedia\.org$ *  
  
-    \# Twitter  
+    #Twitter  
     (.*\.|)twimg\.com$ *  
     (.*\.|)tinypic\.com$ *  
     (.*\.|)twitpic\.com$ *  
@@ -194,20 +194,20 @@ table https_hosts {
     (.*\.|)tweetdeck\.com$ *  
     (.*\.|)t\.co$ *  
  
-    \# Facebook  
+    #Facebook  
     (.*\.|)facebook\.com$ *
     (.*\.|)fbstatic\.com$ *
     (.*\.|)fbcdn\.net$ *
  
-    \# Flickr
+    #Flickr
     (.*\.|)flickr\.com$ *
     (.*\.|)staticflickr\.com$ *
  
-    \# bit.ly
+    #bit.ly
     bitly\.com$ *
     bit\.ly$ *
  
-    \# Google
+    #Google
     (.*\.|)googleapis\.com$ *
     (.*\.|)google\.com$ *
     (.*\.|)google\.co\.jp$ *
@@ -231,19 +231,19 @@ table https_hosts {
     (.*\.|)g\.cn$ *
     (.*\.|)google\.cn$ *
  
-    \# ingress
+    #ingress
     (.*\.|)panoramio.com$ *
 
-    \# autodraw
+    #autodraw
     (.*\.|)autodraw\.com$ *
  
-    \# Imgur
+    #Imgur
     (.*\.|)imgur\.com$ *
  
-    \# Amazon AWS
+    #Amazon AWS
     (.*\.|)amazonaws.com *
  
-    \# CDN
+    #CDN
     github\.global\.ssl\.fastly\.net *
     cdn\.sstatic\.net *
 }
@@ -267,7 +267,7 @@ sniproxy  -c /etc/sniproxy.conf
 server {  
         listen   80 default_server;;  
         server_name _;     
-            \# server_name 这样配置代表匹配任何virtual host里都未配置的域名  
+            #server_name 这样配置代表匹配任何virtual host里都未配置的域名  
         location / {  
                 rewrite ^ https://$host$request_uri permanent;  
         }  
